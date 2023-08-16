@@ -55,11 +55,9 @@ const postAPI = (nameInputElement, textInputElement) => {
      }),
   })
 .then((response) => {
-  console.log("Время:"+ (Date.now()- startAt));
     return response.json()
   })
 .then((responseData) => {
-  console.log("Время:"+ (Date.now()- startAt));
       comments = responseData.todos;
       getAPI();
     })
