@@ -64,11 +64,8 @@ const postAPI = (nameInputElement, textInputElement) => {
 .then(() => {
   nameInputElement.value = '';
   textInputElement.value = '';	
-})
-.then(() => {
   form.style.display = 'flex';
   commentLoading.style.display = 'none';
-
 })
 };	   
 
