@@ -16,28 +16,28 @@ let comments = [];
 // Функция getAPI позволяет получать данные с сервера
 
 const getAPI = () => {
-    return fetch(host, {
-    method: "GET",
-  })
+  return fetch(host, {
+  method: "GET",
+})
 .then((response) => {
-  return response.json();
+return response.json();
 })
 .then((responseData) => {
-  const appComments = responseData.comments.map((comment) => {
-    return {
-      name: comment.author.name,
-      date: new Date(comment.date),
-      text: comment.text,
-      likes:comment.likes,
-      isLiked: false,
-      propertyColorLike: 'like-button -no-active-like',
-    }
-  })
+const appComments = responseData.comments.map((comment) => {
+  return {
+    name: comment.author.name,
+    date: new Date(comment.date),
+    text: comment.text,
+    likes:comment.likes,
+    isLiked: false,
+    propertyColorLike: 'like-button -no-active-like',
+  }
+})
 comments = appComments;
-  renderComments();
+renderComments();
 })
 .then(() => {
-  commentsLoading.style.display = 'none';
+commentsLoading.style.display = 'none';
 })
 };
 
@@ -53,10 +53,8 @@ const postAPI = (nameInputElement, textInputElement) => {
       text: textInputElement.value,
       name: nameInputElement.value
      }),
+  
   })
-// .then((response) => {
-
-// })
 .then((response) => {
     console.log(response);
     console.log(nameInputElement.value.length);
