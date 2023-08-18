@@ -16,28 +16,28 @@ let comments = [];
 // Функция getAPI позволяет получать данные с сервера
 
 const getAPI = () => {
-    return fetch(host, {
-    method: "GET",
-  })
+  return fetch(host, {
+  method: "GET",
+})
 .then((response) => {
-  return response.json();
+return response.json();
 })
 .then((responseData) => {
-  const appComments = responseData.comments.map((comment) => {
-    return {
-      name: comment.author.name,
-      date: new Date(comment.date),
-      text: comment.text,
-      likes:comment.likes,
-      isLiked: false,
-      propertyColorLike: 'like-button -no-active-like',
-    }
-  })
+const appComments = responseData.comments.map((comment) => {
+  return {
+    name: comment.author.name,
+    date: new Date(comment.date),
+    text: comment.text,
+    likes:comment.likes,
+    isLiked: false,
+    propertyColorLike: 'like-button -no-active-like',
+  }
+})
 comments = appComments;
-  renderComments();
+renderComments();
 })
 .then(() => {
-  commentsLoading.style.display = 'none';
+commentsLoading.style.display = 'none';
 })
 };
 
@@ -53,9 +53,19 @@ const postAPI = (nameInputElement, textInputElement) => {
       text: textInputElement.value,
       name: nameInputElement.value
      }),
+  
   })
 .then((response) => {
-    return response.json()
+    console.log(response);
+    console.log(nameInputElement.value.length);
+
+    if (response.status === 500) {
+      throw new Error("Сервер сломался");
+    } else if (response.status === 400) {
+      throw new Error("Плохой запрос");
+    } else {
+      return response.json();
+    }
   })
 .then((responseData) => {
       comments = responseData.todos;
@@ -66,6 +76,20 @@ const postAPI = (nameInputElement, textInputElement) => {
   textInputElement.value = '';	
   form.style.display = 'flex';
   commentLoading.style.display = 'none';
+})
+.catch((error) =>{
+  form.style.display = 'flex';
+  commentLoading.style.display = 'none';
+  if (error.message === "Сервер сломался") {
+    alert("Сервер сломался, попробуйте позже");
+
+  } else if (error.message === "Плохой запрос") {
+    alert("Имя и комментарий должны быть не короче 3 символов");
+
+  } else {
+    alert("Кажется, у вас сломался интернет, попробуйте позже");
+    console.warn(error);
+  }
 })
 };	   
 
