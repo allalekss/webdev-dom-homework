@@ -1,101 +1,130 @@
-import { getTodos,postTodo} from "./api.js";
-import { renderComments} from "./render.js";
-import { getLikeButton} from "./like.js";
+'use strict';
+import { validateForm } from './validate.js';
+import { getTodos, postTodo, getTodosAuthorization } from './api.js';
+import { renderAuthorizationPage } from './render.js';
+import { renderMarkup } from './renderMarkup.js';
+import { renderLogin } from './pagelogin.js';
 
-const form = document.querySelector('.add-form');
-export const nameInputElement = document.querySelector('.add-form-name');
-export const textInputElement = document.querySelector('.add-form-text');
-export const buttonElement = document.querySelector('.add-form-button');
-export const commentsElement = document.querySelector('.comments');
-// const buttonElementDel = document.querySelector('.delete-form-button');
-// const arrayInputs = [nameInputElement, textInputElement];
-// const host = "https://wedev-api.sky.pro/api/v1/ala-sharova/comments";
-// const listElement = document.getElementById("list");
-const commentsLoading = document.querySelector('.loader');
-const commentLoading = document.querySelector('.loader_1');
-export let comments = [];
+export let  comments = [];
 
+const promiseLoad = document.querySelector('.promise-load');
+
+// Запрос на сервер для получения данных комментариев без авторизации
+export function getAPI() {
+  getTodos()
+  .then((responseData) => {
+    const appComments = responseData.comments.map((comment) => {
+      return {
+        name: comment.author.name,
+        date: new Date(comment.date),
+        text: comment.text,
+        likes:comment.likes,
+        isLiked: false,
+        propertyColorLike: 'like-button -no-active-like',    
+      }
+    })
+    comments = appComments;
+      renderMarkup({
+        comments,
+        renderLogin,
+        fetchPromiseWithAuthorization,
+      });
+    })
+    .catch((error) => {
+      console.log(error);
+      alert('Произошла ошибка, попробуйте повторить позже');
+    });
+}
 
   
-// Функция getAPI позволяет получать данные с сервера
 
-const getAPI = () => {
-getTodos()
-.then((responseData) => {
-const appComments = responseData.comments.map((comment) => {
-  return {
-    name: comment.author.name,
-    date: new Date(comment.date),
-    text: comment.text,
-    likes:comment.likes,
-    isLiked: false,
-    propertyColorLike: 'like-button -no-active-like',
-  }
-})
-comments = appComments;
-renderComments(comments);
-})
-.then(() => {
-commentsLoading.style.display = 'none';
-})
-};
-
+// Отображение списка комментариев на экране неавторизованному пользователю
 getAPI();
 
-// Функция postAPI позволяет отправлять данные на сервер
-const postAPI = (nameInputElement, textInputElement) => {
-  form.style.display = 'none';
-  commentLoading.style.display = 'flex';
-  postTodo()
-.then((responseData) => {
-      comments = responseData.todos;
-      getAPI();
+// Запрос на сервер для получения данных комментариев с авторизацией
+function fetchPromiseWithAuthorization() {
+  getTodosAuthorization()
+    .then((response) => {
+      console.log(response);
+      comments = response;
+      promiseLoad.classList.add('hidden');
+      renderAuthorizationPage({
+        comments,
+        handleFormSubmission,
+      });
     })
-.then(() => {
-  nameInputElement.value = '';
-  textInputElement.value = '';	
-  form.style.display = 'flex';
-  commentLoading.style.display = 'none';
-})
-.catch((error) =>{
-  form.style.display = 'flex';
-  commentLoading.style.display = 'none';
-  if (error.message === "Сервер сломался") {
-    alert("Сервер сломался, попробуйте позже");
+    .catch((error) => {
+      console.log(error);
+      alert('Произошла ошибка, попробуйте повторить позже');
+    });
+}
 
-  } else if (error.message === "Плохой запрос") {
-    alert("Имя и комментарий должны быть не короче 3 символов");
+// Создаём фунцию-генератор карточек
+function appendComment(userName, userComment) {
+  const textInputElement = document.querySelector('.add-form-text');
+  const form = document.querySelector('.add-form');
+  const promiseAdd = document.querySelector('.promise-add');
 
-  } else {
-    alert("Кажется, у вас сломался интернет, попробуйте позже");
-    console.warn(error);
-  }
-})
-};	   
+  form.classList.add('hidden');
+  promiseAdd.classList.add('hidden');
 
+  postTodo(userName, userComment)
+    .then((response) => {
+      if (response.status === 201) {
+        return response.json();
+      } else if (response.status === 401) {
+        throw new Error('Вы не авторизованы');
+      } else if (response.status === 400) {
+        throw new Error('Имя и комментарий должны быть не короче 3 символов');
+      } else {
+        /*повторный запрос на сервер при ошибке 500 */
+        appendComment(userName, userComment);
+        throw new Error('Сервер сломался, попробуйте позже');
+      }
+    })
+    .then(() => {
+      return fetchPromiseWithAuthorization();
+    })
+    .then(() => {
+      form.classList.remove('hidden');
+      promiseAdd.classList.remove('hidden');
+      textInputElement.value = '';
+    })
+    .catch((error) => {
+      if (
+        error.message !== 'Failed to fetch'
+          ? alert(`${error.message}`)
+          : alert('Кажется, у вас сломался интернет, попробуйте позже')
+      );
+      form.classList.toggle('hidden');
+      promiseAdd.classList.toggle('hidden');
+    });
+  renderAuthorizationPage({
+    comments,
+    handleFormSubmission,
+    
+  });
+}
 
+// Функция обработки при нажатии на кнопку "написать"
 
+function handleFormSubmission() {
+  const nameInputElement = document.querySelector('.add-form-name');
+  const  textInputElement = document.querySelector('.add-form-text');
+  const inputValue = nameInputElement.value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;');
 
-getLikeButton();
-
-
-
-// комментарий вводимый пользователем добавляем в массив
-
-buttonElement.addEventListener("click", () => {
-  nameInputElement.classList.remove('error');
-  if(nameInputElement.value === "" || textInputElement === "") {
-      textInputElement.classList.add('error');
-      nameInputElement.classList.add('error');
-      return;
-  } 
-  textInputElement.classList.remove('error');
-  postAPI(nameInputElement, textInputElement);
-})
-  
-renderComments(comments);
-
-
-console.log("It works!");
-
-
+  const areaFormValue = textInputElement.value
+    .replaceAll('&', '&amp;')
+    .replaceAll('<', '&lt;')
+    .replaceAll('>', '&gt;')
+    .replaceAll('"', '&quot;')
+    .replaceAll('QUOTE_BEGIN', "<div class='quote'>")
+    .replaceAll('QUOTE_END', '</div>');
+  inputValue === '' || areaFormValue === ''
+    ? validateForm(textInputElement)
+    : appendComment(inputValue, areaFormValue);
+}
