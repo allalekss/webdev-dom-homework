@@ -1,12 +1,31 @@
 // Код без модуля
-
-
+// const commentsElement(ulComments) = document.querySelector('.comments');
+// const buttonElement(buttonElement) = document.querySelector('.add-form-button');
+// const textInputElement(areaAddFormRow) = document.querySelector('.add-form-text');
+// host(todosUrl)
+// userHost(userUrl)
+// getTodosAuthorization(getTodosAuthorization)
+// let comments(usersComments) = [];
+// getAPI(getcomments)
+// loader(comment loader)
+// const commentsLoading = document.querySelector('.loader');
+// const nameInputElement(inputAddNameForm) = document.querySelector('.add-form-name');
+// const nameInputValue(inputValue )
+// const textInputValue(areaFormValue)
+// comment
 
 // const form = document.querySelector('.add-form');
 // const nameInputElement = document.querySelector('.add-form-name');
-// const textInputElement = document.querySelector('.add-form-text');
-// const buttonElement = document.querySelector('.add-form-button');
-// const commentsElement = document.querySelector('.comments');
+// const commentsLoading = document.querySelector('.loader');
+
+
+
+
+
+
+
+
+// const commentsElement(commentsElement) = document.querySelector('.comments');
 // const buttonElementDel = document.querySelector('.delete-form-button');
 // const arrayInputs = [nameInputElement, textInputElement];
 // const host = "https://wedev-api.sky.pro/api/v1/ala-sharova/comments";
@@ -38,7 +57,7 @@
 //   }
 // })
 // comments = appComments;
-// renderComments();
+// listComments();
 // })
 // .then(() => {
 // commentsLoading.style.display = 'none';
@@ -111,13 +130,13 @@
 //         commentsElement.likes -= 1;
 //         commentsElement.isLiked = false;
 //         commentsElement.propertyColorLike = 'like-button -no-active-like'; 
-//         renderComments();
+//         listComments();
 //       } else {
 //         commentsElement.likes += 1;
 //         commentsElement.isLiked = true;
 //         commentsElement.propertyColorLike = 'like-button -active-like';  
 //       }      
-//       renderComments();       
+//       listComments();       
 //     });	      
 //   };   
 // };
@@ -140,7 +159,7 @@
 // });
 
 // // HTML код через JS
-// const renderComments = () => {
+// const listComments = () => {
 // const commentsHtml = comments.map((comment, index) => {   
 //     const commentDate = new Date(comment.date);
 //     const timeDate = commentDate.toLocaleDateString() + ' ' +commentDate.getHours() + ':' + commentDate.getMinutes();
@@ -169,7 +188,7 @@
 //   // replyComment();
 //   };
   
-//   renderComments();
+//   listComments();
 
 
 
@@ -238,12 +257,12 @@
 //           commentsElement.likesNumber -= 1;
 //           commentsElement.likeComment = false;
 //           commentsElement.propertyColorLike = 'like-button -no-active-like'; 
-//           renderComments();
+//           listComments();
 //         } else {
 //           commentsElement.likesNumber += 1;
 //           commentsElement.likeComment = true;
 //           commentsElement.propertyColorLike = 'like-button -active-like'; 
-//           renderComments();      
+//           listComments();      
 //         }
 //       })
 //     }
@@ -311,7 +330,7 @@
 //     textInputElement.value = "";
 
 // replyComment();
-// renderComments();
+// listComments();
 // });
 
 
@@ -327,7 +346,7 @@
 // replyComment();
 
 // // HTML код через JS
-// const renderComments = () => {
+// const listComments = () => {
 
 // const commentsHtml = comments.map((comment, index) => {   
 
@@ -365,7 +384,7 @@
 // replyComment();
 // };
 
-// renderComments();
+// listComments();
 
 
 
